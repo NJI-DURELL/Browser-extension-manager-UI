@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- SEO Meta Tags -->
+  <title>Extensions Manager | Organize your Browser Tools</title>
+  <meta name="description" content="Manage your browser extensions. Enable, disable, filter, and remove tools dynamically in dark or light mode.">
+  <meta name="author" content="Antigravity">
+  
+  <link rel="icon" type="image/png" sizes="32x32" href="./assets/images/favicon-32x32.png">
+  
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="./style.css">
+
+  <!-- Inline Script to prevent Light/Dark flash on initial load -->
+  <script>
+    (function () {
+      const savedTheme = localStorage.getItem('theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (savedTheme === 'light' || (!savedTheme && !prefersDark)) {
+        document.documentElement.classList.add('light-theme');
+        document.body && document.body.classList.add('light-theme');
+      }
+    })();
+  </script>
+</head>
+<body>
+
+  <div class="container">
+    <!-- Header Area -->
+    <header>
+      <div class="brand">
+        <img class="brand-logo" src="./assets/images/logo.svg" alt="Extensions Manager" width="135" height="32">
+      </div>
+      <button id="theme-toggle" class="theme-toggle" aria-label="Switch to light theme" aria-live="polite">
+        <!-- SVG Icon will be injected dynamically by script.js -->
+      </button>
+    </header>
+
+    <!-- Main Workspace -->
+    <main>
+      <section class="main-header" aria-labelledby="workspace-title">
+        <h1 id="workspace-title" class="main-title">Extensions List</h1>
+        
+        <!-- Accessibility role group for filters -->
+        <div class="filter-group" role="group" aria-label="Filter extensions">
+          <button id="filter-all" class="filter-btn active" data-filter="all" aria-pressed="true">All</button>
+          <button id="filter-active" class="filter-btn" data-filter="active" aria-pressed="false">Active</button>
+          <button id="filter-inactive" class="filter-btn" data-filter="inactive" aria-pressed="false">Inactive</button>
+        </div>
+      </section>
+
+      <!-- Extensions Cards Grid -->
+      <section aria-label="Extensions collection">
+        <div id="extensions-grid" class="extensions-grid">
+          <!-- Dynamic cards injected via JavaScript -->
+        </div>
+      </section>
+    </main>
+
+    <!-- Attribution Footer -->
+    <footer>
+      <p class="attribution" id="footer-attribution">
+        Challenge by <a href="https://www.frontendmentor.io?ref=challenge" target="_blank" rel="noopener noreferrer">Frontend Mentor</a>. 
+        Coded by <a href="https://github.com/Antigravity" target="_blank" rel="noopener noreferrer">Antigravity AI</a>.
+      </p>
+    </footer>
+  </div>
+
+  <!-- Interactivity Script -->
+  <script src="./script.js"></script>
+</body>
+</html>
