@@ -34,10 +34,13 @@
       <div class="brand">
         <img class="brand-logo" src="./assets/images/logo.svg" alt="Extensions Manager" width="135" height="32">
       </div>
-      <button id="theme-toggle" class="theme-toggle" aria-label="Switch to light theme" aria-live="polite">
+      <button id="theme-toggle" class="theme-toggle" aria-label="Switch to light theme">
         <!-- SVG Icon will be injected dynamically by script.js -->
       </button>
     </header>
+
+    <!-- Live region for screen reader announcements about list changes -->
+    <div id="extensions-status" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
 
     <!-- Main Workspace -->
     <main>

@@ -115,6 +115,19 @@ const MOON_ICON = `
 const themeToggleBtn = document.getElementById('theme-toggle');
 const extensionsGrid = document.getElementById('extensions-grid');
 const filterBtns = document.querySelectorAll('.filter-btn');
+const statusRegion = document.getElementById('extensions-status');
+
+/* ==========================================================================
+   LIVE REGION ANNOUNCEMENTS (Screen Reader Support)
+   ========================================================================== */
+function announceStatus(message) {
+  if (!statusRegion) return;
+  // Clear first so repeated identical messages still trigger a new announcement
+  statusRegion.textContent = '';
+  requestAnimationFrame(() => {
+    statusRegion.textContent = message;
+  });
+}
 
 /* ==========================================================================
    THEME SWITCHING LOGIC
@@ -192,7 +205,6 @@ function renderExtensions() {
   if (filteredExtensions.length === 0) {
     const emptyDiv = document.createElement('div');
     emptyDiv.className = 'empty-state';
-    emptyDiv.role = 'status';
     
     let filterName = 'all';
     if (currentFilter === 'active') filterName = 'active';
@@ -203,7 +215,17 @@ function renderExtensions() {
       <p>There are no extensions in the <strong>${filterName}</strong> category.</p>
     `;
     extensionsGrid.appendChild(emptyDiv);
+    announceStatus(`No extensions found in the ${filterName} category.`);
     return;
+  }
+
+  // Announce the current count to screen readers
+  const activeCount = filteredExtensions.filter(e => e.isActive).length;
+  const inactiveCount = filteredExtensions.length - activeCount;
+  if (currentFilter === 'all') {
+    announceStatus(`Showing ${filteredExtensions.length} extensions. ${activeCount} active, ${inactiveCount} inactive.`);
+  } else {
+    announceStatus(`Showing ${filteredExtensions.length} ${currentFilter} extensions.`);
   }
 
   // Render cards in grid
@@ -256,13 +278,17 @@ function handleToggle(index, cardElement) {
   
   const switchBtn = cardElement.querySelector('.switch');
   const newState = extensions[index].isActive;
+  const extName = extensions[index].name;
   
   // Update screen-reader attributes immediately for assistive technologies
   switchBtn.setAttribute('aria-checked', newState ? 'true' : 'false');
-  switchBtn.setAttribute('aria-label', `Toggle status of ${extensions[index].name}. Currently ${newState ? 'active' : 'inactive'}`);
+  switchBtn.setAttribute('aria-label', `Toggle status of ${extName}. Currently ${newState ? 'active' : 'inactive'}`);
+
+  // Announce the change to screen readers
+  announceStatus(`${extName} is now ${newState ? 'active' : 'inactive'}.`);
 
   // Visual cues: if we are in a filtered list, we trigger a fade-out exit transition
-  if (currentFilter === 'active' && !newState || currentFilter === 'inactive' && newState) {
+  if ((currentFilter === 'active' && !newState) || (currentFilter === 'inactive' && newState)) {
     cardElement.classList.add('fade-out');
     // Wait for the exit animation to complete before re-rendering
     cardElement.addEventListener('animationend', () => {
@@ -275,12 +301,16 @@ function handleToggle(index, cardElement) {
 }
 
 function handleRemove(index, cardElement) {
+  const extName = extensions[index].name;
+  
   // Play leaving transition
   cardElement.classList.add('fade-out');
   
   cardElement.addEventListener('animationend', () => {
     // Remove the extension from the main array
     extensions.splice(index, 1);
+    // Announce removal to screen readers
+    announceStatus(`${extName} has been removed. ${extensions.length} extensions remaining.`);
     // Re-render the grid
     renderExtensions();
   }, { once: true });
